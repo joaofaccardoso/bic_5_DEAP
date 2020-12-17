@@ -8,6 +8,7 @@ from datetime import datetime
 from deap import base
 from deap import creator
 from deap import tools
+from deap import algorithms
 
 from classloader import load_image_function
 
@@ -92,16 +93,19 @@ def optimize(outdir, render_image, render_size, max_attempts, max_iterations, nu
         # Criacao de uma nova populacao
         offspring = toolbox.select(pop, len(pop))
         offspring = [ toolbox.clone(ind) for ind in offspring ]
+        CROSSOVER_PROB = 0.9
+        MUTATION_PROB = 0.1
+        offspring = algorithms.varAnd(offspring, toolbox,CROSSOVER_PROB, MUTATION_PROB)
 
-        # Aplicar crossover
-        for child1, child2 in zip(offspring[::2], offspring[1::2]):
-            if random.random() < 0.5:
-                toolbox.mate(child1, child2)
+        # # Aplicar crossover
+        # for child1, child2 in zip(offspring[::2], offspring[1::2]):
+        #     if random.random() < 0.5:
+        #         toolbox.mate(child1, child2)
         
-        # Aplicar mutacao
-        for mutant in offspring:
-            if random.random() < 0.2:
-                toolbox.mutate(mutant)
+        # # Aplicar mutacao
+        # for mutant in offspring:
+        #     if random.random() < 0.2:
+        #         toolbox.mutate(mutant)
 
         # Substituir populacao anterior
         pop = check_bounds(offspring, 0.02, 0.98)
