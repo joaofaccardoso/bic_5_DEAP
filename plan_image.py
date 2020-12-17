@@ -40,6 +40,8 @@ def cxTwoPointCopy(ind1, ind2):
 toolbox.register("evaluate", f_fitness)
 toolbox.register("mate", cxTwoPointCopy)
 toolbox.register("mutate", tools.mutGaussian, mu=0, sigma=1, indpb=0.2)
+
+toolbox.register("clip", np.clip, a_min=0.02, a_max=0.98)
 toolbox.register("select", tools.selTournament, tournsize=5)
 
 # Funcao para preencher os individuos
@@ -93,10 +95,11 @@ def optimize(outdir, render_image, render_size, max_attempts, max_iterations, nu
         # Criacao de uma nova populacao
         offspring = toolbox.select(pop, len(pop))
         offspring = [ toolbox.clone(ind) for ind in offspring ]
+
+        #MUDAR ISTO
         CROSSOVER_PROB = 0.9
         MUTATION_PROB = 0.1
         offspring = algorithms.varAnd(offspring, toolbox,CROSSOVER_PROB, MUTATION_PROB)
-
         # # Aplicar crossover
         # for child1, child2 in zip(offspring[::2], offspring[1::2]):
         #     if random.random() < 0.5:
@@ -107,8 +110,10 @@ def optimize(outdir, render_image, render_size, max_attempts, max_iterations, nu
         #     if random.random() < 0.2:
         #         toolbox.mutate(mutant)
 
-        # Substituir populacao anterior
-        pop = check_bounds(offspring, 0.02, 0.98)
+        
+        #pop = check_bounds(offspring, 0.02, 0.98)
+        offspring = toolbox.clip(offspring)
+        
 
         # Calcular fitness e guardar o melhor da nova populacao
         fitnesses = toolbox.map(toolbox.evaluate, pop)
